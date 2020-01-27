@@ -9,6 +9,12 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+var factory *compiler.Factory
+
+func init() {
+	factory = compiler.NewFactory()
+}
+
 func main() {
 	s := NewServer(":8080")
 	defer s.Close()
@@ -27,6 +33,7 @@ func NewServer(addr string) *http.Server {
 		Handler: mux,
 	}
 }
+
 func handleRequest(w http.ResponseWriter, r *http.Request) {
 	logrus.WithField("request", r).Info("handling request")
 	if r.Method != http.MethodPost {
@@ -52,7 +59,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func writeCompileResult(w http.ResponseWriter, keymap io.Reader) error {
-	c, err := compiler.NewCompiler()
+	c, err := factory.NewCompiler()
 	if err != nil {
 		logrus.WithError(err).Error("can not create compiler")
 		return err

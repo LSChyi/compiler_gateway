@@ -17,23 +17,38 @@ const (
 	OnDemand = "ONDEMAND"
 )
 
-type Complier interface {
+type Compiler interface {
 	Compile(keymap io.Reader) (io.Reader, error)
 	Close()
 }
 
-func NewCompiler() (Complier, error) {
+type Factory struct {
+	compilerType string
+}
+
+func NewFactory() *Factory {
+	res := new(Factory)
 	compilerType, set := os.LookupEnv(TypeKey)
 	if !set {
 		logrus.Info("compiler type not set, use on default compiler")
-		return ondemand.NewCompiler()
+		res.compilerType = OnDemand
+	} else {
+		switch compilerType {
+		case OnDemand:
+			res.compilerType = OnDemand
+		default:
+			logrus.WithField("type", compilerType).Info("unimplemented, use default compiler")
+			res.compilerType = OnDemand
+		}
 	}
+	return res
+}
 
-	switch compilerType {
+func (f *Factory) NewCompiler() (Compiler, error) {
+	switch f.compilerType {
 	case OnDemand:
 		return ondemand.NewCompiler()
 	default:
-		logrus.WithField("type", compilerType).Info("unimplemented, use default compiler")
 		return ondemand.NewCompiler()
 	}
 }
