@@ -1,11 +1,10 @@
-package compiler
+package ondemand
 
 import (
 	"archive/tar"
 	"bytes"
 	"fmt"
 	"io"
-	//"io/ioutil"
 )
 
 func genTarKeymap(source io.Reader) (io.Reader, error) {
