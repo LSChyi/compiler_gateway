@@ -4,7 +4,7 @@ import (
 	"io"
 	"net/http"
 
-	"online_compiler/compiler"
+	"compiler_gateway/compiler"
 
 	"github.com/sirupsen/logrus"
 )

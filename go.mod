@@ -1,4 +1,4 @@
-module online_compiler
+module compiler_gateway
 
 go 1.13
 

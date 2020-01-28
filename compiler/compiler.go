@@ -4,7 +4,8 @@ import (
 	"io"
 	"os"
 
-	"online_compiler/compiler/ondemand"
+	"compiler_gateway/compiler/ondemand"
+	"compiler_gateway/compiler/stationary"
 
 	"github.com/sirupsen/logrus"
 )
@@ -14,7 +15,8 @@ const (
 
 	TypeKey = "TYPE"
 
-	OnDemand = "ONDEMAND"
+	OnDemand   = "ONDEMAND"
+	Stationary = "STATIONARY"
 )
 
 type Complier interface {
@@ -26,14 +28,16 @@ func NewCompiler() (Complier, error) {
 	compilerType, set := os.LookupEnv(TypeKey)
 	if !set {
 		logrus.Info("compiler type not set, use on default compiler")
-		return ondemand.NewCompiler()
+		return stationary.NewCompiler()
 	}
 
 	switch compilerType {
+	case Stationary:
+		return stationary.NewCompiler()
 	case OnDemand:
 		return ondemand.NewCompiler()
 	default:
 		logrus.WithField("type", compilerType).Info("unimplemented, use default compiler")
-		return ondemand.NewCompiler()
+		return stationary.NewCompiler()
 	}
 }

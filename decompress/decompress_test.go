@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"online_compiler/decompress"
+	"compiler_gateway/decompress"
 
 	"github.com/stretchr/testify/assert"
 )
