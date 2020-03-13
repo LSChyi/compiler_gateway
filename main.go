@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"compiler_gateway/compiler"
+	"compiler_gateway/decompress"
 
 	"github.com/sirupsen/logrus"
 )
@@ -35,13 +36,21 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	r.Body = http.MaxBytesReader(w, r.Body, 64*1024) // limit size for 64KB
-	keymap, _, err := r.FormFile("keymapZip")
+	r.ParseMultipartForm(64 * 1024)
+	keymapZip, _, err := r.FormFile("keymapZip")
 	if err != nil {
+		logrus.WithError(err).Error("can not get keymap zip")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	defer keymap.Close()
+	defer keymapZip.Close()
+
+	keymap, err := decompress.UnzipAndLoadTarget(keymapZip, "keymap.c")
+	if err != nil {
+		logrus.WithError(err).Error("can not get keymap file")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
 	err = writeCompileResult(w, keymap)
 	if err != nil {

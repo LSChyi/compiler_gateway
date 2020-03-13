@@ -23,8 +23,8 @@ type Compiler struct {
 
 func NewCompiler() (*Compiler, error) {
 	endpoint := defaultEndpoint
-	if endpoint, set := os.LookupEnv(EndpointKey); set {
-		endpoint = endpoint
+	if e, set := os.LookupEnv(EndpointKey); set {
+		endpoint = e
 	} else {
 		logrus.Info("endpoint not set, use default endpoint")
 	}
